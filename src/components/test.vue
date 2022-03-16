@@ -1,17 +1,13 @@
 
 <script lang="ts">
-import { h } from 'vue'
+import { ref, h } from 'vue'
+
 export default {
-  props: {
-    /* ... */
-  },
+
   setup() {
-    // use an array to return multiple root nodes
-    return () => [
-      h('div'),
-      h('div'),
-    ]
+    const count = ref(1)
+
+    return () => h('div', { onClick: () => { return count.value++ } }, count.value)
   }
 }
-
 </script>

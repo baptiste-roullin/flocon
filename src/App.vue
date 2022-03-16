@@ -33,12 +33,12 @@ import testVue from './components/test.vue';
 	</header>
 
 	<main role="main" class="w-fit">
-		<!--	<Suspense>
+		<Suspense>
 			<ButtonsList />
 			<template #fallback>
 				<Spinner />
 			</template>
-		</Suspense>-->
+		</Suspense>
 	</main>
 </template>
 

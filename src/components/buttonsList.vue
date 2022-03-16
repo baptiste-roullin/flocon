@@ -1,6 +1,5 @@
 <script setup lang='ts'>
 import btn from './btn.vue'
-import test from './test.vue'
 import { reactive } from 'vue';
 
 
@@ -16,13 +15,11 @@ const fontsList = reactive(data.items)
 </script>
 
 <template>
-	<div>
-		<ul>
-			<li v-for="index in 10" :key="index">
-				<btn :fontsList="fontsList" id="btn-{{index}}" />
-			</li>
-		</ul>
-	</div>
+	<ul>
+		<li v-for="index in 10" :key="index">
+			<btn :fontsList="fontsList" :id="index" />
+		</li>
+	</ul>
 </template>
 
 
