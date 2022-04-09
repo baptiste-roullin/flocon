@@ -22,6 +22,11 @@ function randInt(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+
+function randIndex(ar) {
+	return ar.length * Math.random() | 0
+}
+
 function getColor() {
 	const l = randInt(0, 100)
 	const c = randInt(0, 132)
@@ -34,18 +39,16 @@ function getColor() {
 
 function getLengths(min: number, max: number) {
 	return `
-				${randInt(min, max)}px
-				${randInt(min, max)}px
-				${randInt(min, max)}px
-				${randInt(min, max)}px
-  `
+	${randInt(min, max)}px
+	${randInt(min, max)}px
+	${randInt(min, max)}px
+	${randInt(min, max)}px`
 }
 
 
 function font() {
 	const list = props.fontsList
-	const index = randInt(0, list.length - 1)
-	const family = list[index].family
+	const family = list[randIndex(list)].family
 	//@ts-ignore
 	/*			WebFont.load({
 					google: {
@@ -61,49 +64,57 @@ function pickContrastedColor(fg = 0, bg = 0): number {
 	fg = getColor();
 	const contrast = APCAcontrast(fg, bg)
 	if (Math.abs(contrast) < 20 || contrast === 'Y∆LOW') {
-		console.log('contraste trop faible :   ' + contrast)
+		//console.log('contraste trop faible :   ' + contrast)
 		return pickContrastedColor(fg, bg)
 	}
 	else {
 		buttonStyleRef.value.meta.contrast = contrast
 		buttonStyleRef.value.default.color = fg.toString()
 		buttonStyleRef.value.default.backgroundColor = bg.toString()
-		console.log('contraste selon le nouvel algo APCA :   ' + contrast)
+		//console.log('contraste selon le nouvel algo APCA :   ' + contrast)
 		return contrast
 	}
 }
 
-/*function changeRule(buttonStyleRef.value: any): any {
-
-}*/
-
-function change(idElement) {
 
 
-	//	pickContrastedColor()
+function createStyle(id, head, rules) {
+	const newSheet = document.createElement("style")
+	newSheet.classList.add('sheet-' + id)
+	head.appendChild(newSheet)
+	newSheet.textContent = rules
+}
+
+
+function change(id) {
 	/*	buttonStyleRef.value.hover.backgroundColor = getColor()
 		buttonStyleRef.value.default.padding = getLengths(0, 20)
 		buttonStyleRef.value.default.fontFamily = font()
 	*/
+
+	buttonStyleRef.value.default = generateRules()
+	pickContrastedColor()
+
+	//buttonStyleRef.value.default['&hover'] = generateRules()
 	const rules = jss.createStyleSheet({
-		button: buttonStyleRef.value.default
+		'@global': {
+			['.' + id]:
+				buttonStyleRef.value.default
+
+		}
 	})
 		.toString()
 
-	const currentSheet = document.head.querySelector(".sheet-" + idElement)
+	const head = document.head
+	const currentSheet = head.querySelector(".sheet-" + id)
 
 	if (currentSheet) {
-		currentSheet.textContent = rules
-		console.log(rules);
-
+		currentSheet.setAttribute("disabled", 'true')
+		head.removeChild(currentSheet)
+		createStyle(id, head, rules)
 	}
 	else {
-		const newSheet = document.createElement("style")
-		newSheet.classList.add('sheet-' + idElement)
-		document.head.appendChild(newSheet)
-		newSheet.textContent = rules
-
-
+		createStyle(id, head, rules)
 	}
 
 
@@ -137,78 +148,52 @@ function createRules(): CSS.Properties {
 	}
 	return properties
 
+
 }*/
 
-const buttonStyle: CSS.Properties = {
-	fontFamily: font(),
-	paddingLeft: getLengths(0, 20),
-	paddingRight: getLengths(0, 20),
-	paddingTop: getLengths(0, 20),
-	paddingBottom: getLengths(0, 20),
-	// backgroundColor: 'hsl(180, 50%, 50%)',
-	backgroundColor: getColor(),
-	//	hoverBackground: 'antiquewhite',
-	borderLeft: getLengths(0, 5) + "solid" + getColor(),
-	borderBottomColor: 'hsl(180, 50%, 50%)',
-	borderBottomLeftRadius: '5px',
-	borderBottomRightRadius: '5px',
-	borderBottomStyle: 'solid',
-	borderBottomWidth: '5px',
-	borderLeftColor: 'hsl(180, 50%, 50%)',
-	borderLeftStyle: 'solid',
-	borderLeftWidth: '5px',
-	borderRadius: '5px',
-	borderRight: '5px',
-	borderRightColor: 'hsl(180, 50%, 50%)',
-	borderRightStyle: 'solid',
-	borderRightWidth: '5px',
-	borderSpacing: '5px',
-	borderStartEndRadius: '5px',
-	borderStartStartRadius: '5px',
-	borderStyle: '5px',
-	borderTop: '5px',
-	borderTopColor: 'hsl(180, 50%, 50%)',
-	borderTopLeftRadius: '5px',
-	borderTopRightRadius: '5px',
-	borderTopStyle: 'solid',
-	borderTopWidth: '5px',
-	borderWidth: '5px',
-	color: 'black',
-	contentVisibility: 'auto',
-	cursor: 'pointer',
-	fontSize: '1.2em',
-	width: '10em',
-	userSelect: 'none',
-	margin: '1em auto',
-	textAlign: 'center'
+function getLineStyle() {
+	const style = ["dashed", "dotted", "double", "groove", "hidden", "inset", "none", "outset", "ridge", "solid"]
+	return style[randIndex(style)]
+}
+
+function generateRules(): CSS.Properties {
+	return {
+		fontFamily: font(),
+		padding: getLengths(0, 20),
+		borderTopColor: getColor(),
+		borderBottomColor: getColor(),
+		borderLeftColor: getColor(),
+		borderRightColor: getColor(),
+		borderRadius: getLengths(0, 30),
+		borderStyle: getLineStyle(),
+		borderWidth: getLengths(0, 6),
+		contentVisibility: 'auto',
+		cursor: 'pointer',
+		fontSize: '1.2em',
+		width: randInt(120, 300) + 'px',
+		userSelect: 'none',
+		margin: '1em auto',
+		textAlign: 'center'
+	}
 }
 
 const buttonStyleRef = ref({
-	default: buttonStyle,
-	hover: buttonStyle,
+	default: generateRules(),
+	hover: generateRules(),
 	meta: {
 		contrast: 0
 	}
 })
 
 
-
-
-
-const createGenerateId = () => {
-	let counter = 0
-	return (rule, sheet) => `${rule.key}-${counter++}`
-}
-jss.setup({ createGenerateId })
+jss.setup(preset())
 
 
 const button = ref<HTMLElement | null>(null)!
 
 onMounted(() => {
 	const id = button.value?.className
-
 	change(id)
-
 })
 
 
@@ -221,7 +206,7 @@ onMounted(() => {
 		aria-label="activer ce bouton sert à changer son style de manière aléatoire"
 		role="button"
 		@click="(e) => { change((e.currentTarget as HTMLElement).className) }"
-		v-on:keyup="(e) => { change((e.currentTarget as HTMLElement).className) }"
+		v-on:keyup:enter="(e) => { change((e.currentTarget as HTMLElement).className) }"
 	>
 		<div class="btn-child">Bouton</div>
 	</div>
