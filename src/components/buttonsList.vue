@@ -17,7 +17,7 @@ const fontsList = reactive(data.items)
 <template>
 	<ul>
 		<li v-for="index in 10" :key="index">
-			<btn :fontsList="fontsList" :id="index" />
+			<btn :fontsList="fontsList" :class="`button-${index}`" />
 		</li>
 	</ul>
 </template>

@@ -2,13 +2,14 @@
 <script setup lang='ts'>
 import Spinner from './components/icons/spinner.vue';
 import ButtonsList from './components/buttonsList.vue';
-import testVue from './components/test.vue';
+import Btn2 from './components/btn2.vue';
 
 /*WebFont.load({
 	google: {
 		families: ['Droid Sans', 'Droid Serif']
 	}
 });*/
+
 
 </script>
 
