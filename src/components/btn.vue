@@ -149,7 +149,8 @@ function changeRules(id: string) {
 function generateRules(type = "classic"): CSS.Properties {
 	let rules = {
 		textShadow: "",
-		letterSpacing: rand(0.1, 3) + 'px',
+		fontWeight: randInt(2, 9) + '00',
+		letterSpacing: rand(0.1, 2) + 'px',
 		boxShadow: "",
 		textEmphasis: "",
 		textTransform: getProperty('textTransform'),
@@ -159,7 +160,7 @@ function generateRules(type = "classic"): CSS.Properties {
 		contentVisibility: 'auto',
 		fontSize: '1.2em',
 		height: randInt(20, 50) + 'px',
-		width: randInt(120, 300) + 'px',
+		width: randInt(130, 300) + 'px',
 		userSelect: 'none',
 		textAlign: 'center',
 		display: 'flex',
