@@ -3,25 +3,18 @@ import "construct-style-sheets-polyfill"
 
 import { ref, type Ref, onMounted } from 'vue'
 import { APCAcontrast } from '../apca.js'
-import { toRGB } from '../convert.js'
 import Color from '../color';
 import type * as CSS from 'csstype';
-
-import jss, { SheetsManager } from 'jss'
+import jss from 'jss'
 import preset from 'jss-preset-default'
 
-
-
 const props = defineProps(['fontsList'])
-
-
 
 function randInt(min: number, max: number) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
 
 function randIndex(ar) {
 	return ar.length * Math.random() | 0
@@ -37,14 +30,22 @@ function getColor() {
 	return color
 }
 
-function getLengths(min: number, max: number) {
-	return `
-	${randInt(min, max)}px
-	${randInt(min, max)}px
-	${randInt(min, max)}px
-	${randInt(min, max)}px`
-}
+function getLengths(min: number, max: number, type = "random") {
+	let top = randInt(min, max)
+	let bottom = randInt(min, max)
+	let left = randInt(min, max)
+	let right = randInt(min, max)
 
+	if (type === 'symmetric') {
+		top = bottom
+		left = right
+	}
+	return `
+	${top}px
+	${right}px
+	${bottom}px
+	${left}px`
+}
 
 function font() {
 	const list = props.fontsList
@@ -59,23 +60,35 @@ function font() {
 	return family
 }
 
-function pickContrastedColor(fg = 0, bg = 0): number {
+function pickContrastedColor(rules, fg = 0, bg = 0): number {
 	bg = getColor()
 	fg = getColor();
 	const contrast = APCAcontrast(fg, bg)
 	if (Math.abs(contrast) < 20 || contrast === 'Y∆LOW') {
 		//console.log('contraste trop faible :   ' + contrast)
-		return pickContrastedColor(fg, bg)
+		return pickContrastedColor(rules, fg, bg)
 	}
 	else {
-		buttonStyleRef.value.meta.contrast = contrast
-		buttonStyleRef.value.default.color = fg.toString()
-		buttonStyleRef.value.default.backgroundColor = bg.toString()
+		rules.color = fg.toString()
+		rules.backgroundColor = bg.toString()
 		//console.log('contraste selon le nouvel algo APCA :   ' + contrast)
 		return contrast
 	}
 }
+function getLineStyle() {
+	const array = ["dashed", "dotted", "double", "groove", "hidden", "inset", "none", "outset", "ridge", "solid"]
+	return array[randIndex(array)]
+}
 
+function getTextTransform() {
+	const array = ["capitalize", "full-size-kana", "full-width", "lowercase", "none", "uppercase"]
+	return array[randIndex(array)] as CSS.Property.TextTransform
+}
+
+function getType() {
+	const array = ["classic", "vertical", "clipped", "noBorder"]
+	return array[randIndex(array)]
+}
 
 
 function createStyle(id, head, rules) {
@@ -86,21 +99,13 @@ function createStyle(id, head, rules) {
 }
 
 
-function change(id) {
-	/*	buttonStyleRef.value.hover.backgroundColor = getColor()
-		buttonStyleRef.value.default.padding = getLengths(0, 20)
-		buttonStyleRef.value.default.fontFamily = font()
-	*/
 
-	buttonStyleRef.value.default = generateRules()
-	pickContrastedColor()
-
-	//buttonStyleRef.value.default['&hover'] = generateRules()
+function changeRules(id) {
+	buttonStyle.default = generateRules()
 	const rules = jss.createStyleSheet({
 		'@global': {
-			['.' + id]:
-				buttonStyleRef.value.default
-
+			['.' + id + ' .btn-child']:
+				buttonStyle.default
 		}
 	})
 		.toString()
@@ -116,50 +121,25 @@ function change(id) {
 	else {
 		createStyle(id, head, rules)
 	}
-
-
-	/*
-				//const values = ["0%", '25%','50%','75%','100%']
-				const values = [25, -25, 0]
-
-				const upperRight = 100 + values[randInt(0, values.length - 1)] + '% 0%,'
-
-				buttonStyleRef.value['path'] =
-					upperRight +
-					'100% 50%,' +
-					'100% 100%,' +
-					'0% 100%,' +
-					'0% 50%,' +
-					'0% 0%'*/
+	//const values = ["0%", '25%','50%','75%','100%']
+	const values = [25, -25, 0]
+	const upperRight = 100 + values[randInt(0, values.length - 1)] + '% 0%,'
+	buttonStyle['path'] =
+		upperRight +
+		'100% 50%,' +
+		'100% 100%,' +
+		'0% 100%,' +
+		'0% 50%,' +
+		'0% 0%'
 }
 
-function getBorderStyle(): CSS.Property.BorderStyle {
-
-	return ""
-}
-
-/*
-function createRules(): CSS.Properties {
-	const properties: CSS.Properties = {}
-
-	for (const property in properties) {
-		properties[property] =
-			pro	perties[property]
-	}
-	return properties
-
-
-}*/
-
-function getLineStyle() {
-	const style = ["dashed", "dotted", "double", "groove", "hidden", "inset", "none", "outset", "ridge", "solid"]
-	return style[randIndex(style)]
-}
 
 function generateRules(): CSS.Properties {
-	return {
+	let rules = {
+		textShadow: "",
+		textTransform: getTextTransform(),
 		fontFamily: font(),
-		padding: getLengths(0, 20),
+		padding: getLengths(0, 20, 'symmetric'),
 		borderTopColor: getColor(),
 		borderBottomColor: getColor(),
 		borderLeftColor: getColor(),
@@ -170,58 +150,60 @@ function generateRules(): CSS.Properties {
 		contentVisibility: 'auto',
 		cursor: 'pointer',
 		fontSize: '1.2em',
-		width: randInt(120, 300) + 'px',
+/*		height: randInt(20, 50) + 'px',
+*/		width: randInt(120, 300) + 'px',
 		userSelect: 'none',
 		margin: '1em auto',
 		textAlign: 'center'
-	}
+	} as CSS.Properties
+
+	pickContrastedColor(rules)
+
+	return rules
 }
 
-const buttonStyleRef = ref({
+const buttonStyle = {
 	default: generateRules(),
 	hover: generateRules(),
-	meta: {
-		contrast: 0
-	}
-})
+	type: 'button'
+}
 
 
 jss.setup(preset())
-
-
 const button = ref<HTMLElement | null>(null)!
 
 onMounted(() => {
 	const id = button.value?.className
-	change(id)
+	changeRules(id)
 })
+
+
+function changeRuleshandler(e) {
+	changeRules((e.currentTarget as HTMLElement).className)
+}
+
 
 
 </script>
 
 <template>
-	<div
-		ref="button"
-		tabindex="0"
-		aria-label="activer ce bouton sert à changer son style de manière aléatoire"
-		role="button"
-		@click="(e) => { change((e.currentTarget as HTMLElement).className) }"
-		v-on:keyup:enter="(e) => { change((e.currentTarget as HTMLElement).className) }"
-	>
+	<div tabindex="0" aria-label="activer ce bouton sert à changer son style de manière aléatoire"
+		role="button" @click="changeRuleshandler" v-on:keyup:enter="changeRuleshandler"
+		v-on:keyup:space="changeRuleshandler" ref="button">
+
 		<div class="btn-child">Bouton</div>
 	</div>
 </template>
 
 
-<style>
-.btn {
-	filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.1))
-		drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.2));
+<style>.btn {
+	filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.1)) drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .btn-child {
 	clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
 }
+
 /*
 .btn-child:focus {
 	outline: 3px ridge black;
@@ -229,5 +211,4 @@ onMounted(() => {
 
 .btnhover {
 	background-color: buttonStyle.value[ "hover-background" ];
-}*/
-</style>
+}*/</style>
