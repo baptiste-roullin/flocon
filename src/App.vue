@@ -2,7 +2,6 @@
 <script setup lang='ts'>
 import Spinner from './components/icons/spinner.vue';
 import ButtonsList from './components/buttonsList.vue';
-import Btn2 from './components/btn2.vue';
 
 /*WebFont.load({
 	google: {
@@ -15,10 +14,7 @@ import Btn2 from './components/btn2.vue';
 
 
 <template>
-	<header
-		role="banner"
-		class="flex flex-col items-center justify-center gap-12 leading-6 text-center"
-	>
+	<header role="banner" class="flex flex-col items-center justify-center gap-12 leading-6 text-center">
 		<h1 class>
 			<div class="mb-6 text-6xl">Flocon</div>
 			<div class="text-5xl font-medium">
@@ -26,11 +22,8 @@ import Btn2 from './components/btn2.vue';
 				<i>design system</i>
 			</div>
 		</h1>
-		<img
-			class="w-24 h-auto"
-			alt="Ce site est en cours de construction"
-			src="./assets/under-construction.gif"
-		/>
+		<img class="w-24 h-auto" alt="Ce site est en cours de construction"
+			src="./assets/under-construction.gif" />
 	</header>
 
 	<main role="main" class="w-fit">
@@ -39,8 +32,7 @@ import Btn2 from './components/btn2.vue';
 			<template #fallback>
 				<Spinner />
 			</template>
-		</Suspense>
-	</main>
+		</Suspense>	</main>
 </template>
 
 

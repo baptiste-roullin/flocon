@@ -15,7 +15,7 @@ const fontsList = reactive(data.items)
 </script>
 
 <template>
-	<ul>
+	<ul class="flex flex-col items-center justify-center gap-8">
 		<li v-for="index in 10" :key="index">
 			<btn :fontsList="fontsList" :class="`button-${index}`" />
 		</li>
@@ -29,6 +29,7 @@ ul {
 	padding: 0;
 	width: fit-content;
 }
+
 li {
 	padding: 0;
 	list-style: none;
