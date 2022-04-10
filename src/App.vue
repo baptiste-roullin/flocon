@@ -13,7 +13,7 @@ import ButtonsList from './components/buttonsList.vue';
 </script>
 
 
-<template>
+<template class="flex flex-column items-align" >
 	<header role="banner" class="flex flex-col items-center justify-center gap-12 leading-6 text-center">
 		<h1 class>
 			<div class="mb-6 text-6xl">Flocon</div>
@@ -47,7 +47,7 @@ import ButtonsList from './components/buttonsList.vue';
 	border-radius: 1em;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 800px) {
 	body {
 		display: flex;
 		place-items: center;
@@ -60,6 +60,17 @@ import ButtonsList from './components/buttonsList.vue';
 		padding: 0rem 10vw;
 		width: auto;
 		gap: 10vw;
+		margin: 1em auto;
+	}
+}
+
+@media (max-width: 799px) {
+	#app {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: auto;
+		gap: 4em;
 		margin: 1em auto;
 	}
 }
