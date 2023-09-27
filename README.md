@@ -1,1 +1,1 @@
-[https://misc.toutcequibouge.net/flocon/](A design system of pure chaos)
+[A design system of pure chaos](https://misc.toutcequibouge.net/flocon/).
